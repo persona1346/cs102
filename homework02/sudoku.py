@@ -1,4 +1,5 @@
 from typing import Tuple, List, Set, Optional
+import random
 
 
 def read_sudoku(filename: str) -> List[List[str]]:
@@ -99,16 +100,12 @@ def find_empty_positions(grid: List[List[str]]) -> Optional[Tuple[int, int]]:
     >>> find_empty_positions([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']])
     (2, 0)
     """
-    fl = True
     for i in range(len(grid)):
         for j in range(len(grid)):
             if grid[i][j] == ".":
-                Optional = (i,) + (j,)
-                fl = False
-                break
-        if fl is False:
-            break
-    return Optional
+                return (i, j)
+
+    return False
 
 
 def find_possible_values(grid: List[List[str]], pos: Tuple[int, int]) -> Set[str]:
@@ -163,7 +160,7 @@ def solve(grid: List[List[str]]) -> Optional[List[List[str]]]:
             if solution is not None:
                 return grid
 
-            grid[empty_positions[0]][empty_positions[1]] = ','
+            grid[empty_positions[0]][empty_positions[1]] = '.'
 
     else:
         return grid
@@ -182,7 +179,7 @@ def check_solution(solution: List[List[str]]) -> bool:
     for i in range(3):
         for j in range(3):
             block = get_block(solution, (i*3, j*3))
-            if len(block) < 9 '.' in block:
+            if len(block) < 9 or '.' in block:
                 return False
 
     return True
@@ -215,7 +212,7 @@ def generate_sudoku(N: int) -> List[List[str]]:
 
     N = min(81, N)
 
-    for i in range(81, - N):
+    for i in range(81 - N):
         pos_ind = random.randint(0, len(possible_pos) - 1)
         pos = possible_pos[pos_ind]
 
