@@ -29,14 +29,14 @@ def group(values: List[str], n: int) -> List[List[str]]:
     >>> group([1,2,3,4,5,6,7,8,9], 3)
     [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
     """
-    List = []
+    list1 = []
     for i in range(n):
         under_list = []
         for j in range(n):
             under_list += [values[i * n + j]]
-        List += [under_list]
+        list1 += [under_list]
 
-    return List
+    return list1
 
 
 def get_row(grid: List[List[str]], pos: Tuple[int, int]) -> List[str]:
@@ -62,10 +62,10 @@ def get_col(grid: List[List[str]], pos: Tuple[int, int]) -> List[str]:
     >>> get_col([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']], (0, 2))
     ['3', '6', '9']
     """
-    List = []
+    list1 = []
     for i in range(len(grid)):
-        List += grid[i][pos[1]]
-    return List
+        list1 += grid[i][pos[1]]
+    return list1
 
 
 def get_block(grid: List[List[str]], pos: Tuple[int, int]) -> List[str]:
@@ -81,13 +81,13 @@ def get_block(grid: List[List[str]], pos: Tuple[int, int]) -> List[str]:
     """
     row = (pos[1] // 3) * 3
     col = (pos[0] // 3) * 3
-    List = []
+    list1 = []
     for i in range(col, col + 3):
         under_list = []
         for j in range(row, row + 3):
             under_list += grid[i][j]
-        List += under_list
-    return List
+        list1 += under_list
+    return list1
 
 
 def find_empty_positions(grid: List[List[str]]) -> Optional[Tuple[int, int]]:
@@ -104,8 +104,6 @@ def find_empty_positions(grid: List[List[str]]) -> Optional[Tuple[int, int]]:
         for j in range(len(grid)):
             if grid[i][j] == ".":
                 return (i, j)
-
-    return False
 
 
 def find_possible_values(grid: List[List[str]], pos: Tuple[int, int]) -> Set[str]:
@@ -152,7 +150,7 @@ def solve(grid: List[List[str]]) -> Optional[List[List[str]]]:
     """
     empty_positions = find_empty_positions(grid)
 
-    if empty_positions is not False:
+    if empty_positions is not None:
         for possible_values in find_possible_values(grid, empty_positions):
             grid[empty_positions[0]][empty_positions[1]] = possible_values
             solution = solve(grid)
@@ -216,7 +214,8 @@ def generate_sudoku(N: int) -> List[List[str]]:
         pos_ind = random.randint(0, len(possible_pos) - 1)
         pos = possible_pos[pos_ind]
 
-        grid[pos[0]][pos[1]] = '.'
+        col, row = pos
+        grid[col][row] = '.'
 
         del possible_pos[pos_ind]
 
