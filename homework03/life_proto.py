@@ -4,6 +4,7 @@ import random
 from pygame.locals import *
 from typing import List, Tuple
 
+
 Cell = Tuple[int, int]
 Cells = List[int]
 Grid = List[Cells]
@@ -27,6 +28,7 @@ class GameOfLife:
 
         # Скорость протекания игры
         self.speed = speed
+        self.grid = [[0 for i in range(self.cell_width)] for i in range(self.cell_height)]
 
     def draw_lines(self) -> None:
         """ Отрисовать сетку """
@@ -45,7 +47,7 @@ class GameOfLife:
         self.screen.fill(pygame.Color('white'))
 
         # Создание списка клеток
-        # PUT YOUR CODE HERE
+        self.grid = self.create_grid()
 
         running = True
         while running:
@@ -54,10 +56,10 @@ class GameOfLife:
                     running = False
             self.draw_lines()
 
-            self.draw_grid()
             # Отрисовка списка клеток
             # Выполнение одного шага игры (обновление состояния ячеек)
-            # PUT YOUR CODE HERE
+            self.draw_grid()
+            self.grid = self.get_next_generation()
 
             pygame.display.flip()
             clock.tick(self.speed)
@@ -81,23 +83,34 @@ class GameOfLife:
         out : Grid
             Матрица клеток размером `cell_height` х `cell_width`.
         """
-        pass
+        if randomize == True:
+            list_cell = []
+            for i in range(self.cell_width):
+                underlist_cell = []
+                for j in range(self.cell_height):
+                    underlist_cell += [random.randint(0,1)]
+                list_cell += [underlist_cell]
+        else:
+            list_cell = []
+            for i in range(self.cell_width):
+                underlist_cell = []
+                for j in range(self.cell_height):
+                    underlist_cell += [0]
+                list_cell += [underlist_cell]
+        return list_cell
 
     def draw_grid(self) -> None:
         """
         Отрисовка списка клеток с закрашиванием их в соответствующе цвета.
         """
-        grid = [[0 for i in range(64)] for i in range(48)]
-        grid[0][0] = 1
-        grid[0][5] = 1
-        grid[5][0] = 1
         for i in range(len(grid)):
             for j in range(len(grid[0])):
-                if grid[i][j] == 1:
+                if self.grid[i][j] == 1:
                     pygame.draw.rect(self.screen, pygame.Color('green'), (j * self.cell_size, i * self.cell_size, self.cell_size, self.cell_size))
                 else:
                     pygame.draw.rect(self.screen, pygame.Color('white'), (j * self.cell_size, i * self.cell_size, self.cell_size, self.cell_size))
         self.draw_lines()
+        pass
 
     def get_neighbours(self, cell: Cell) -> Cells:
         """
@@ -117,7 +130,16 @@ class GameOfLife:
         out : Cells
             Список соседних клеток.
         """
-        pass
+        cell_row, cell_col = cell
+        list_neighbours = []
+        for i in range(3):
+            for j in range(3):
+                nbcell_row = cell_row - 1 + i
+                nbcell_col = cell_col - 1 + j
+                if (nbcell_row, nbcell_col) != cell and nbcell_col >= 0 and nbcell_row >= 0 and nbcell_col < self.cell_width and nbcell_row < self.cell_height:
+                    list_neighbours.append(self.grid[nbcell_row][nbcell_col])
+
+        return list_neighbours
 
     def get_next_generation(self) -> Grid:
         """
@@ -128,4 +150,22 @@ class GameOfLife:
         out : Grid
             Новое поколение клеток.
         """
-        pass
+        help_list = []
+        for i in range(self.cell_height):
+            underlist_cell = []
+            for j in range(self.cell_width):
+                underlist_cell += [0]
+            help_list += [underlist_cell]
+        for i in range(self.cell_height):
+            for j in range(self.cell_width):
+                count_neighbours = 0
+                for nb_cell in self.get_neighbours((i,j)):
+                    if nb_cell == 1:
+                        count_neighbours += 1
+                if self.grid[i][j] == 1:
+                    if count_neighbours == 2 or count_neighbours == 3:
+                        help_list[i][j] = 1
+                else:
+                    if count_neighbours == 3:
+                        help_list[i][j] = 1
+        return help_list
